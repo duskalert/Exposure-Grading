@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "exposuregrading:block/review_table"
+    }
+  }
+}

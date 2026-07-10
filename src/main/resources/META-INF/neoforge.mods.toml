@@ -1,0 +1,10 @@
+[[mods]]
+modId = "exposuregrading"
+version = "1.0.0"
+displayName = "Exposure Grading"
+logoFile = "exposuregrading.png"
+credits = ""
+authors = ""
+description = '''
+A Minecraft mod for Exposure Grading
+'''
