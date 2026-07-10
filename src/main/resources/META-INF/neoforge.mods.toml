@@ -1,10 +1,21 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "All Rights Reserved"
+
 [[mods]]
 modId = "exposuregrading"
 version = "1.0.0"
 displayName = "Exposure Grading"
-logoFile = "exposuregrading.png"
-credits = ""
-authors = ""
 description = '''
 A Minecraft mod for Exposure Grading
 '''
+
+[[dependencies.exposuregrading]]
+modId = "neoforge"
+required = true
+versionRange = "[21,)"
+
+[[dependencies.exposuregrading]]
+modId = "minecraft"
+required = true
+versionRange = "[1.21.1,1.21.2)"

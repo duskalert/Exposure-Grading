@@ -16,9 +16,15 @@ neoForge {
     version = "21.1.136"
 
     runs {
-        client {}
-        server {}
-        data {}
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        data {
+            data()
+        }
     }
 
     mods {
