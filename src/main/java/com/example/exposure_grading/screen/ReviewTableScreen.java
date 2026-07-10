@@ -14,22 +14,30 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
     private static final ResourceLocation BG_DEFAULT = ResourceLocation.fromNamespaceAndPath(ExposureGrading.MODID, "textures/gui/review_table.png");
     private static final ResourceLocation BG_COZY = ResourceLocation.fromNamespaceAndPath(ExposureGrading.MODID, "textures/gui/review_table_cozy.png");
 
-    private final ResourceLocation bgTexture;
+    private ResourceLocation bgTexture;
 
     public ReviewTableScreen(ReviewTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         this.imageWidth = 176;
         this.imageHeight = 166;
-        this.bgTexture = selectTexture();
     }
 
-    private static ResourceLocation selectTexture() {
-        boolean hasCozyPack = Minecraft.getInstance().getResourcePackRepository().getSelectedPacks().stream()
-                .anyMatch(p -> p.getId().startsWith("file/CozyUI"));
-        if (hasCozyPack) {
-            boolean cozyExists = Minecraft.getInstance().getResourceManager()
-                    .getResource(BG_COZY).isPresent();
-            if (cozyExists) return BG_COZY;
+    private ResourceLocation resolveTexture() {
+        try {
+            boolean hasCozy = false;
+            for (var pack : Minecraft.getInstance().getResourcePackRepository().getSelectedPacks()) {
+                String id = pack.getId().toLowerCase();
+                if (id.contains("cozy")) {
+                    hasCozy = true;
+                    break;
+                }
+            }
+            if (hasCozy) {
+                boolean exists = Minecraft.getInstance().getResourceManager()
+                        .getResource(BG_COZY).isPresent();
+                if (exists) return BG_COZY;
+            }
+        } catch (Exception ignored) {
         }
         return BG_DEFAULT;
     }
@@ -47,6 +55,9 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+        if (bgTexture == null) {
+            bgTexture = resolveTexture();
+        }
         guiGraphics.blit(bgTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 

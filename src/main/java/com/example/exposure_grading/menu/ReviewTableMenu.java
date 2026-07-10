@@ -30,7 +30,7 @@ public class ReviewTableMenu extends AbstractContainerMenu {
     }
 
     private void addSlots(Inventory playerInventory) {
-        addSlot(new SlotItemHandler(new ReviewTableHandler(blockEntity), 0, 49, 39) {
+        addSlot(new SlotItemHandler(new ReviewTableHandler(blockEntity), 0, 49, 40) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return !stack.isEmpty();
