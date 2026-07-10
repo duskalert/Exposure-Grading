@@ -1,4 +1,4 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;

@@ -1,4 +1,4 @@
-package com.example.exposuregrading.block;
+package com.example.exposure_grading.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;

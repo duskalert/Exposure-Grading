@@ -1,6 +1,6 @@
-package com.example.exposuregrading.block;
+package com.example.exposure_grading.block;
 
-import com.example.exposuregrading.menu.ReviewTableMenu;
+import com.example.exposure_grading.menu.ReviewTableMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,7 +16,7 @@ public class ReviewTableProvider implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("container.exposuregrading.review_table");
+        return Component.translatable("container.exposure_grading.review_table");
     }
 
     @Override

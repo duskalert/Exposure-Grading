@@ -1,6 +1,6 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
-import com.example.exposuregrading.screen.ReviewTableScreen;
+import com.example.exposure_grading.screen.ReviewTableScreen;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 public class ClientSetup {

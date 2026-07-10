@@ -3,32 +3,32 @@ loaderVersion = "[2,)"
 license = "GPL-3.0-only"
 
 [[mods]]
-modId = "exposuregrading"
+modId = "exposure_grading"
 version = "1.0.0"
-displayName = "Exposure Grading"
+displayName = "Exposure: Grading"
 description = '''
 A Minecraft mod for Exposure Grading
 '''
 
-[[dependencies.exposuregrading]]
+[[dependencies.exposure_grading]]
 modId = "neoforge"
 required = true
 versionRange = "[21,)"
 
-[[dependencies.exposuregrading]]
+[[dependencies.exposure_grading]]
 modId = "minecraft"
 required = true
 versionRange = "[1.21.1,1.21.2)"
 
-[[dependencies.exposuregrading]]
+[[dependencies.exposure_grading]]
 modId = "exposure"
 required = true
 versionRange = "[1.9,)"
 
-[[dependencies.exposuregrading]]
+[[dependencies.exposure_grading]]
 modId = "exposure_polaroid"
 required = false
 
-[[dependencies.exposuregrading]]
+[[dependencies.exposure_grading]]
 modId = "exposure_expanded"
 required = false

@@ -1,6 +1,6 @@
-package com.example.exposuregrading.menu;
+package com.example.exposure_grading.menu;
 
-import com.example.exposuregrading.block.ReviewTableBlockEntity;
+import com.example.exposure_grading.block.ReviewTableBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.Nullable;

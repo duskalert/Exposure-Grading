@@ -1,6 +1,5 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
-import com.example.exposuregrading.screen.ReviewTableScreen;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -8,7 +7,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 @Mod(ExposureGrading.MODID)
 public class ExposureGrading {
-    public static final String MODID = "exposuregrading";
+    public static final String MODID = "exposure_grading";
 
     public ExposureGrading(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);

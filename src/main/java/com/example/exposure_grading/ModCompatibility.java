@@ -1,4 +1,4 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;

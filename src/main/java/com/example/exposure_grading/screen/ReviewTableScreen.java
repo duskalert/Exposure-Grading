@@ -1,7 +1,7 @@
-package com.example.exposuregrading.screen;
+package com.example.exposure_grading.screen;
 
-import com.example.exposuregrading.ExposureGrading;
-import com.example.exposuregrading.menu.ReviewTableMenu;
+import com.example.exposure_grading.ExposureGrading;
+import com.example.exposure_grading.menu.ReviewTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -21,7 +21,7 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.translatable("gui.exposuregrading.rate"), button -> onRate())
+        addRenderableWidget(Button.builder(Component.translatable("gui.exposure_grading.rate"), button -> onRate())
                 .bounds(leftPos + 79, topPos + 34, 60, 20)
                 .build());
     }

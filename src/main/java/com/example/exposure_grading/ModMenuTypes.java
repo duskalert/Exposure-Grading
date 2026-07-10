@@ -1,6 +1,6 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
-import com.example.exposuregrading.menu.ReviewTableMenu;
+import com.example.exposure_grading.menu.ReviewTableMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;

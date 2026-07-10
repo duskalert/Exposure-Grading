@@ -1,4 +1,4 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -12,7 +12,7 @@ public class ModCreativeTabs {
 
     public static final Supplier<CreativeModeTab> EXPOSURE_GRADING_TAB = TABS.register("exposure_grading_tab",
             () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.exposuregrading"))
+                    .title(Component.translatable("itemGroup.exposure_grading"))
                     .icon(() -> ModItems.REVIEW_TABLE.toStack())
                     .displayItems((params, output) -> {
                         output.accept(ModItems.REVIEW_TABLE);

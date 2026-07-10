@@ -1,6 +1,6 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
-import com.example.exposuregrading.block.ReviewTableBlockEntity;
+import com.example.exposure_grading.block.ReviewTableBlockEntity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.minecraft.core.registries.Registries;

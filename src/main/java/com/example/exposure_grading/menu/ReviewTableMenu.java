@@ -1,7 +1,7 @@
-package com.example.exposuregrading.menu;
+package com.example.exposure_grading.menu;
 
-import com.example.exposuregrading.ModMenuTypes;
-import com.example.exposuregrading.block.ReviewTableBlockEntity;
+import com.example.exposure_grading.ModMenuTypes;
+import com.example.exposure_grading.block.ReviewTableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

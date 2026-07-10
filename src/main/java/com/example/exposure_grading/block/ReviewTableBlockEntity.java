@@ -1,6 +1,6 @@
-package com.example.exposuregrading.block;
+package com.example.exposure_grading.block;
 
-import com.example.exposuregrading.ModBlockEntities;
+import com.example.exposure_grading.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

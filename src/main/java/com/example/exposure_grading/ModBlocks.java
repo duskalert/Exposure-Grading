@@ -1,6 +1,6 @@
-package com.example.exposuregrading;
+package com.example.exposure_grading;
 
-import com.example.exposuregrading.block.ReviewTableBlock;
+import com.example.exposure_grading.block.ReviewTableBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
