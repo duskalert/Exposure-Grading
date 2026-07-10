@@ -22,29 +22,25 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         this.imageHeight = 166;
     }
 
-    private ResourceLocation resolveTexture() {
+    private static boolean hasCozyPack() {
         try {
-            boolean hasCozy = false;
             for (var pack : Minecraft.getInstance().getResourcePackRepository().getSelectedPacks()) {
-                String id = pack.getId().toLowerCase();
-                if (id.contains("cozy")) {
-                    hasCozy = true;
-                    break;
+                if (pack.getId().toLowerCase().contains("cozy")) {
+                    return true;
                 }
-            }
-            if (hasCozy) {
-                boolean exists = Minecraft.getInstance().getResourceManager()
-                        .getResource(BG_COZY).isPresent();
-                if (exists) return BG_COZY;
             }
         } catch (Exception ignored) {
         }
-        return BG_DEFAULT;
+        return false;
     }
 
     @Override
     protected void init() {
         super.init();
+        boolean cozy = hasCozyPack();
+        boolean cozyTexExists = Minecraft.getInstance().getResourceManager().getResource(BG_COZY).isPresent();
+        bgTexture = (cozy && cozyTexExists) ? BG_COZY : BG_DEFAULT;
+
         addRenderableWidget(Button.builder(Component.translatable("gui.exposure_grading.rate"), button -> onRate())
                 .bounds(leftPos + 79, topPos + 34, 60, 20)
                 .build());
@@ -55,9 +51,6 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        if (bgTexture == null) {
-            bgTexture = resolveTexture();
-        }
         guiGraphics.blit(bgTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
