@@ -1,12 +1,12 @@
 {
   "parent": "block/block",
   "textures": {
-    "0": "exposuregrading:block/review_table_leg",
-    "1": "exposuregrading:block/review_table_top",
-    "3": "exposuregrading:block/review_table_base",
-    "4": "exposuregrading:block/review_table_arm",
-    "5": "exposuregrading:block/review_table_scope",
-    "particle": "exposuregrading:block/review_table_leg"
+    "0": "exposure_grading:block/review_table_leg",
+    "1": "exposure_grading:block/review_table_top",
+    "3": "exposure_grading:block/review_table_base",
+    "4": "exposure_grading:block/review_table_arm",
+    "5": "exposure_grading:block/review_table_scope",
+    "particle": "exposure_grading:block/review_table_leg"
   },
   "elements": [
     {

@@ -43,9 +43,7 @@ repositories {
 
 dependencies {
     implementation("io.github.mortuusars.exposure:exposure-1.21.1-neoforge:1.9.18") {
-        exclude group: "mezz.jei"
-        exclude group: "curse.maven"
-        exclude group: "dev.latvian.mods"
+        transitive = false
     }
     compileOnly "io.github.mortuusars.exposure_polaroid:exposure_polaroid-1.21.1-neoforge:1.1.5"
 }

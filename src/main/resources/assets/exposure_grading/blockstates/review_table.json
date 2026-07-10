@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "exposuregrading:block/review_table"
+      "model": "exposure_grading:block/review_table"
     }
   }
 }

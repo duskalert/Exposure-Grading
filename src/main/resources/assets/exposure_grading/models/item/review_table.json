@@ -1,5 +1,5 @@
 {
-  "parent": "exposuregrading:block/review_table",
+  "parent": "exposure_grading:block/review_table",
   "display": {
     "thirdperson_righthand": {
       "rotation": [10, -45, 170],
