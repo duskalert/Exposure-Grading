@@ -8,5 +8,8 @@ public class ExposureGrading {
     public static final String MODID = "exposuregrading";
 
     public ExposureGrading(IEventBus modBus) {
+        ModBlocks.BLOCKS.register(modBus);
+        ModItems.ITEMS.register(modBus);
+        ModCreativeTabs.TABS.register(modBus);
     }
 }
