@@ -1,5 +1,6 @@
 package com.example.exposuregrading.screen;
 
+import com.example.exposuregrading.ExposureGrading;
 import com.example.exposuregrading.menu.ReviewTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -9,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> {
-    private static final ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath(ExposureGrading.MODID, "textures/gui/review_table.png");
 
     public ReviewTableScreen(ReviewTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -20,8 +21,8 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.literal("评分"), button -> onRate())
-                .bounds(leftPos + 80, topPos + 32, 50, 20)
+        addRenderableWidget(Button.builder(Component.translatable("gui.exposuregrading.rate"), button -> onRate())
+                .bounds(leftPos + 79, topPos + 34, 60, 20)
                 .build());
     }
 
@@ -30,7 +31,7 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        guiGraphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        guiGraphics.blit(BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
     @Override

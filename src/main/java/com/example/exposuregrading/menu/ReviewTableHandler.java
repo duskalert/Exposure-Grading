@@ -2,10 +2,10 @@ package com.example.exposuregrading.menu;
 
 import com.example.exposuregrading.block.ReviewTableBlockEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.Nullable;
 
-public class ReviewTableHandler implements IItemHandler {
+public class ReviewTableHandler implements IItemHandlerModifiable {
     @Nullable
     private final ReviewTableBlockEntity blockEntity;
 
@@ -48,6 +48,13 @@ public class ReviewTableHandler implements IItemHandler {
     @Override
     public int getSlotLimit(int slot) {
         return 1;
+    }
+
+    @Override
+    public void setStackInSlot(int slot, ItemStack stack) {
+        if (blockEntity != null) {
+            blockEntity.setPhotograph(stack);
+        }
     }
 
     @Override
