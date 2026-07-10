@@ -8,9 +8,13 @@ import org.jetbrains.annotations.Nullable;
 public class ReviewTableHandler implements IItemHandlerModifiable {
     @Nullable
     private final ReviewTableBlockEntity blockEntity;
+    private ItemStack stack = ItemStack.EMPTY;
 
     public ReviewTableHandler(@Nullable ReviewTableBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
+        if (blockEntity != null) {
+            this.stack = blockEntity.getPhotograph();
+        }
     }
 
     @Override
@@ -20,29 +24,32 @@ public class ReviewTableHandler implements IItemHandlerModifiable {
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return blockEntity != null ? blockEntity.getPhotograph() : ItemStack.EMPTY;
-    }
-
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        if (blockEntity != null && !blockEntity.hasPhotograph()) {
-            if (!simulate) {
-                blockEntity.setPhotograph(stack);
-            }
-            return ItemStack.EMPTY;
-        }
         return stack;
     }
 
     @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (blockEntity == null) return ItemStack.EMPTY;
-        ItemStack current = blockEntity.getPhotograph();
-        if (current.isEmpty()) return ItemStack.EMPTY;
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+        if (!this.stack.isEmpty()) return stack;
         if (!simulate) {
-            blockEntity.setPhotograph(ItemStack.EMPTY);
+            this.stack = stack.copyWithCount(1);
+            if (blockEntity != null) {
+                blockEntity.setPhotograph(this.stack);
+            }
         }
-        return current.copyWithCount(1);
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+        if (this.stack.isEmpty()) return ItemStack.EMPTY;
+        ItemStack result = this.stack.copyWithCount(1);
+        if (!simulate) {
+            this.stack = ItemStack.EMPTY;
+            if (blockEntity != null) {
+                blockEntity.setPhotograph(ItemStack.EMPTY);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -52,8 +59,9 @@ public class ReviewTableHandler implements IItemHandlerModifiable {
 
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
+        this.stack = stack.copyWithCount(1);
         if (blockEntity != null) {
-            blockEntity.setPhotograph(stack);
+            blockEntity.setPhotograph(this.stack);
         }
     }
 
