@@ -34,6 +34,22 @@ neoForge {
     }
 }
 
+repositories {
+    maven {
+        name = "Mortuusars Github Maven"
+        url = "https://raw.githubusercontent.com/mortuusars/resources/main/maven/"
+    }
+}
+
+dependencies {
+    implementation("io.github.mortuusars.exposure:exposure-1.21.1-neoforge:1.9.18") {
+        exclude group: "mezz.jei"
+        exclude group: "curse.maven"
+        exclude group: "dev.latvian.mods"
+    }
+    compileOnly "io.github.mortuusars.exposure_polaroid:exposure_polaroid-1.21.1-neoforge:1.1.5"
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
