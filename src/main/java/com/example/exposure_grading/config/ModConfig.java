@@ -15,7 +15,9 @@ public class ModConfig {
     public record Client(
             ModConfigSpec.ConfigValue<String> apiKey,
             ModConfigSpec.ConfigValue<String> apiUrl,
-            ModConfigSpec.ConfigValue<String> prompt
+            ModConfigSpec.ConfigValue<Double> weightComposition,
+            ModConfigSpec.ConfigValue<Double> weightLighting,
+            ModConfigSpec.ConfigValue<Double> weightCreativity
     ) {
         Client(ModConfigSpec.Builder builder) {
             this(
@@ -23,9 +25,12 @@ public class ModConfig {
                             .define("apiKey", ""),
                     builder.comment("API endpoint URL")
                             .define("apiUrl", "https://open.bigmodel.cn/api/paas/v4/chat/completions"),
-                    builder.comment("Rating prompt sent to the AI. Use {json_format} as placeholder.")
-                            .define("prompt",
-                                    "请以JSON格式评价这张照片，包含字段：composition(float 构图)、lighting(float 光影)、creativity(float 创意)、comment(string 评语)。只返回JSON，不要其他文字。")
+                    builder.comment("Weight for composition (0.0 ~ 1.0)")
+                            .defineInRange("weightComposition", 1.0d, 0.0d, 1.0d),
+                    builder.comment("Weight for lighting (0.0 ~ 1.0)")
+                            .defineInRange("weightLighting", 1.0d, 0.0d, 1.0d),
+                    builder.comment("Weight for creativity (0.0 ~ 1.0)")
+                            .defineInRange("weightCreativity", 1.0d, 0.0d, 1.0d)
             );
         }
     }

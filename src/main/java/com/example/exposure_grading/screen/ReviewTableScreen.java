@@ -112,7 +112,7 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
                 return;
             }
 
-            String prompt = ModConfig.CLIENT.prompt().get();
+            String prompt = "请以JSON格式评价这张照片，包含字段：composition(float 构图)、lighting(float 光影)、creativity(float 创意)、comment(string 评语)。只返回JSON，不要其他文字。";
             var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
 
             Minecraft.getInstance().execute(() -> {
