@@ -2,5 +2,13 @@
   "block.exposure_grading.review_table": "评审台",
   "container.exposure_grading.review_table": "评审台",
   "gui.exposure_grading.rate": "评分",
+  "gui.exposure_grading.rating": "评分中...",
+  "gui.exposure_grading.rated": "已评分！",
+  "gui.exposure_grading.already_rated": "已评过分",
+  "gui.exposure_grading.error_no_frame": "非照片物品",
+  "gui.exposure_grading.error_no_id": "无法获取照片ID",
+  "gui.exposure_grading.error_no_data": "无法获取照片数据",
+  "gui.exposure_grading.error_image": "图片转换失败",
+  "gui.exposure_grading.error_no_key": "未设置API密钥",
   "itemGroup.exposure_grading": "曝光评级"
 }

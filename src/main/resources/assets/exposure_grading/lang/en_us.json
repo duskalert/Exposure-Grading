@@ -2,5 +2,13 @@
   "block.exposure_grading.review_table": "Review Table",
   "container.exposure_grading.review_table": "Review Table",
   "gui.exposure_grading.rate": "Rate",
+  "gui.exposure_grading.rating": "Rating...",
+  "gui.exposure_grading.rated": "Rated!",
+  "gui.exposure_grading.already_rated": "Already rated",
+  "gui.exposure_grading.error_no_frame": "No photo frame",
+  "gui.exposure_grading.error_no_id": "No exposure ID",
+  "gui.exposure_grading.error_no_data": "No exposure data",
+  "gui.exposure_grading.error_image": "Image conversion failed",
+  "gui.exposure_grading.error_no_key": "API key not set",
   "itemGroup.exposure_grading": "Exposure: Grading"
 }
