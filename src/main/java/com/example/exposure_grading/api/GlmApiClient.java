@@ -81,8 +81,9 @@ public class GlmApiClient {
             JsonObject json = JsonParser.parseString(text).getAsJsonObject();
             return new PhotoRating(
                     getFloat(json, "composition"),
-                    getFloat(json, "lighting"),
+                    getFloat(json, "tone"),
                     getFloat(json, "creativity"),
+                    getFloat(json, "content"),
                     getString(json, "comment")
             );
         } catch (Exception e) {

@@ -14,8 +14,9 @@ public class ModDataComponents {
 
     public static final Codec<PhotoRating> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.FLOAT.fieldOf("composition").forGetter(PhotoRating::composition),
-            Codec.FLOAT.fieldOf("lighting").forGetter(PhotoRating::lighting),
+            Codec.FLOAT.fieldOf("tone").forGetter(PhotoRating::tone),
             Codec.FLOAT.fieldOf("creativity").forGetter(PhotoRating::creativity),
+            Codec.FLOAT.fieldOf("content").forGetter(PhotoRating::content),
             Codec.STRING.fieldOf("comment").forGetter(PhotoRating::comment)
     ).apply(instance, PhotoRating::new));
 

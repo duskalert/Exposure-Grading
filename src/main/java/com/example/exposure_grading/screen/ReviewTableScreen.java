@@ -112,7 +112,7 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
                 return;
             }
 
-            String prompt = "请以JSON格式评价这张照片，包含字段：composition(float 构图)、lighting(float 光影)、creativity(float 创意)、comment(string 评语)。只返回JSON，不要其他文字。";
+            String prompt = "请以JSON格式评价这张照片，包含字段：composition(float 构图)、tone(float 影调)、creativity(float 创意)、content(float 内容)、comment(string 评语)。只返回JSON，不要其他文字。";
             var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
 
             Minecraft.getInstance().execute(() -> {
@@ -144,11 +144,12 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
             var r = stack.get(ModDataComponents.PHOTO_RATING.get());
             if (r != null) {
                 guiGraphics.drawString(this.font, "构图: " + r.composition(), 80, 58, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "光影: " + r.lighting(), 80, 68, 0xFFFFFF);
+                guiGraphics.drawString(this.font, "影调: " + r.tone(), 80, 68, 0xFFFFFF);
                 guiGraphics.drawString(this.font, "创意: " + r.creativity(), 80, 78, 0xFFFFFF);
+                guiGraphics.drawString(this.font, "内容: " + r.content(), 80, 88, 0xFFFFFF);
             }
         }
-        guiGraphics.drawString(this.font, statusText, 80, 100, 0xAAAAAA);
+        guiGraphics.drawString(this.font, statusText, 80, 108, 0xAAAAAA);
     }
 
     @Override
