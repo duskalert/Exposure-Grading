@@ -130,7 +130,7 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
             Minecraft.getInstance().execute(() -> {
                 if (result.success() && result.rating() != null) {
                     statusText = Component.translatable("gui.exposure_grading.rated");
-                    PacketDistributor.sendToServer(new C2SRatingPacket(0, result.rating()));
+                    PacketDistributor.sendToServer(new C2SRatingPacket(result.rating()));
                     currentRating = true;
                 } else {
                     statusText = Component.literal("§c" + result.message());
