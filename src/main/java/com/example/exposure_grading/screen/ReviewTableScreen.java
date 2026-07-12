@@ -106,8 +106,8 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
                 return;
             }
 
-            String apiKey = ModConfig.CLIENT.apiKey().get();
-            String apiUrl = ModConfig.CLIENT.apiUrl().get();
+            String apiKey = ModConfig.CLIENT.apiKey;
+            String apiUrl = ModConfig.CLIENT.apiUrl;
             if (apiKey.isEmpty()) {
                 Minecraft.getInstance().execute(() -> statusText = Component.translatable("gui.exposure_grading.error_no_key"));
                 return;
@@ -159,10 +159,10 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
     }
 
     private float total(PhotoRating r) {
-        double w1 = ModConfig.CLIENT.weightComposition().get();
-        double w2 = ModConfig.CLIENT.weightTone().get();
-        double w3 = ModConfig.CLIENT.weightCreativity().get();
-        double w4 = ModConfig.CLIENT.weightContent().get();
+        double w1 = ModConfig.CLIENT.weightComposition;
+        double w2 = ModConfig.CLIENT.weightTone;
+        double w3 = ModConfig.CLIENT.weightCreativity;
+        double w4 = ModConfig.CLIENT.weightContent;
         double sum = w1 + w2 + w3 + w4;
         if (sum == 0) return 0;
         return (float) ((r.composition() * w1 + r.tone() * w2 + r.creativity() * w3 + r.content() * w4) / sum);
