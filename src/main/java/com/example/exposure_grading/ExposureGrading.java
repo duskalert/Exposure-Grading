@@ -13,6 +13,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import static com.example.exposure_grading.config.ModConfig.CLIENT_SPEC;
+import static com.example.exposure_grading.config.ModConfig.SERVER_SPEC;
 
 @Mod(ExposureGrading.MODID)
 public class ExposureGrading {
@@ -29,6 +30,7 @@ public class ExposureGrading {
 
         ModContainer container = ModLoadingContext.get().getActiveContainer();
         container.registerConfig(Type.CLIENT, CLIENT_SPEC);
+        container.registerConfig(Type.COMMON, SERVER_SPEC);
         modBus.addListener(ModNetworking::onRegisterPayload);
 
         if (FMLEnvironment.dist.isClient()) {

@@ -2,29 +2,23 @@ package com.example.exposure_grading.screen;
 
 import com.example.exposure_grading.ExposureGrading;
 import com.example.exposure_grading.ModDataComponents;
-import com.example.exposure_grading.api.GlmApiClient;
 import com.example.exposure_grading.api.ImageUtil;
-import com.example.exposure_grading.block.ReviewTableBlockEntity;
-import com.example.exposure_grading.config.ModConfig;
-import com.example.exposure_grading.data.PhotoRating;
 import com.example.exposure_grading.menu.ReviewTableMenu;
 import com.example.exposure_grading.network.C2SRatingPacket;
-import net.neoforged.neoforge.network.PacketDistributor;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.level.storage.ExposureData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.BlockPos;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-
 import java.util.concurrent.CompletableFuture;
 
 public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> {
@@ -105,7 +99,8 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
                 return;
             }
 
-            String exposureId = frame.identifier().getId().orElse(null);
+            var ident = frame.identifier();
+            String exposureId = ident.id();
             if (exposureId == null) {
                 Minecraft.getInstance().execute(() -> {
                     ratingInProgress = false;
@@ -140,75 +135,22 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
                 return;
             }
 
-            String apiKey = ModConfig.CLIENT.apiKey().get();
-            String apiUrl = ModConfig.CLIENT.apiUrl().get();
-            if (apiKey.isEmpty()) {
-                Minecraft.getInstance().execute(() -> {
-                    ratingInProgress = false;
-                    rateButton.active = true;
-                    statusText = Component.translatable("gui.exposure_grading.error_no_key");
-                    clearRatingState();
-                });
-                return;
-            }
-
-            String prompt = """
-你是一位专业的摄影评委。请从以下四个维度评价这张照片，每项打分0-10分（精确到一位小数），并给出简短评语。
-
-评分标准：
-- 构图(composition)：主体突出、画面平衡、线条引导、黄金分割/三分法等构图手法的运用
-- 影调(tone)：光影层次、明暗对比、色彩协调、氛围营造
-- 创意(creativity)：拍摄角度、主题表达、独特视角、想象力
-- 内容(content)：画面故事性、情感传达、主体吸引力、趣味性
-
-请严格按照以下JSON格式返回，不要包含其他文字：
-{"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "评语"}
-""";
-            var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
+            byte[] pngBytes = java.util.Base64.getDecoder().decode(base64);
+            BlockPos bePos = menu.getBlockEntity() != null ? menu.getBlockEntity().getBlockPos() : null;
 
             Minecraft.getInstance().execute(() -> {
                 ratingInProgress = false;
                 rateButton.active = true;
-                if (result.success() && result.rating() != null) {
-                    ItemStack slotStack = menu.getSlot(0).getItem();
-                    if (!slotStack.isEmpty()) {
-                        slotStack.set(ModDataComponents.PHOTO_RATING.get(), result.rating());
-                        slotStack.set(ModDataComponents.RATING_STATE.get(), "rated");
+                if (bePos != null) {
+                    var pkt = new C2SRatingPacket(bePos, pngBytes);
+                    var conn = Minecraft.getInstance().getConnection();
+                    if (conn != null) {
+                        conn.send(new ServerboundCustomPayloadPacket(pkt));
                     }
-                    PhotoRating finalRating = result.rating();
-                    Minecraft mc = Minecraft.getInstance();
-                    ExposureGrading.LOGGER.info("Rating success, writing to server...");
-                    // Singleplayer: access server player's container menu directly from render thread
-                    if (mc.getSingleplayerServer() != null) {
-                        ExposureGrading.LOGGER.info("Singleplayer mode detected");
-                        var serverPlayer = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
-                        if (serverPlayer != null) {
-                            ExposureGrading.LOGGER.info("Found server player, containerMenu={}", serverPlayer.containerMenu);
-                            if (serverPlayer.containerMenu instanceof ReviewTableMenu m) {
-                                var ss = m.getSlot(0).getItem();
-                                ExposureGrading.LOGGER.info("Server slot item: empty={}, hasRating={}", ss.isEmpty(), ss.has(ModDataComponents.PHOTO_RATING.get()));
-                                if (!ss.isEmpty()) {
-                                    ss.set(ModDataComponents.PHOTO_RATING.get(), finalRating);
-                                    ExposureGrading.LOGGER.info("Rating written to server slot, now hasRating={}", ss.has(ModDataComponents.PHOTO_RATING.get()));
-                                }
-                            } else {
-                                ExposureGrading.LOGGER.warn("Server player containerMenu is not ReviewTableMenu: {}", serverPlayer.containerMenu);
-                            }
-                        } else {
-                            ExposureGrading.LOGGER.warn("Server player not found!");
-                        }
-                    }
-                    // Dedicated server: C2S network packet as fallback
-                    if (mc.getSingleplayerServer() == null) {
-                        PacketDistributor.sendToServer(new C2SRatingPacket(finalRating, BlockPos.ZERO, "", ""));
-                    }
-                    statusText = Component.translatable("gui.exposure_grading.rated");
+                    statusText = Component.translatable("gui.exposure_grading.rating_sent");
                 } else {
-                    ItemStack slotStack = menu.getSlot(0).getItem();
-                    if (!slotStack.isEmpty()) {
-                        slotStack.remove(ModDataComponents.RATING_STATE.get());
-                    }
-                    statusText = Component.literal("§c" + result.message());
+                    clearRatingState();
+                    statusText = Component.literal("§cBlock entity not found!");
                 }
             });
         } catch (Exception e) {
