@@ -4,6 +4,8 @@ import com.example.exposure_grading.config.ModConfig;
 import com.example.exposure_grading.network.ModNetworking;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
@@ -15,6 +17,7 @@ import static com.example.exposure_grading.config.ModConfig.CLIENT_SPEC;
 @Mod(ExposureGrading.MODID)
 public class ExposureGrading {
     public static final String MODID = "exposure_grading";
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExposureGrading.class);
 
     public ExposureGrading(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);
@@ -30,7 +33,7 @@ public class ExposureGrading {
 
         if (FMLEnvironment.dist.isClient()) {
             modBus.addListener(RegisterMenuScreensEvent.class, ClientSetup::onRegisterMenuScreens);
-            modBus.addListener(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.class, ClientSetup::onItemTooltip);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ClientSetup::onItemTooltip);
         }
     }
 }

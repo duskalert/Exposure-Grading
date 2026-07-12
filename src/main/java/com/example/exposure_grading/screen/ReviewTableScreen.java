@@ -4,23 +4,26 @@ import com.example.exposure_grading.ExposureGrading;
 import com.example.exposure_grading.ModDataComponents;
 import com.example.exposure_grading.api.GlmApiClient;
 import com.example.exposure_grading.api.ImageUtil;
-import com.example.exposure_grading.data.PhotoRating;
+import com.example.exposure_grading.block.ReviewTableBlockEntity;
 import com.example.exposure_grading.config.ModConfig;
+import com.example.exposure_grading.data.PhotoRating;
 import com.example.exposure_grading.menu.ReviewTableMenu;
 import com.example.exposure_grading.network.C2SRatingPacket;
+import net.neoforged.neoforge.network.PacketDistributor;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.level.storage.ExposureData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -30,7 +33,8 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
 
     private ResourceLocation bgTexture;
     private Component statusText = Component.empty();
-    private boolean currentRating = false;
+    private boolean ratingInProgress = false;
+    private Button rateButton;
 
     public ReviewTableScreen(ReviewTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -57,12 +61,13 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         boolean cozyTexExists = Minecraft.getInstance().getResourceManager().getResource(BG_COZY).isPresent();
         bgTexture = (cozy && cozyTexExists) ? BG_COZY : BG_DEFAULT;
 
-        addRenderableWidget(Button.builder(Component.translatable("gui.exposure_grading.rate"), button -> onRate())
+        rateButton = addRenderableWidget(Button.builder(Component.translatable("gui.exposure_grading.rate"), button -> onRate())
                 .bounds(leftPos + 79, topPos + 34, 60, 20)
                 .build());
     }
 
     private void onRate() {
+        if (ratingInProgress) return;
         ItemStack stack = menu.getSlot(0).getItem();
         if (stack.isEmpty()) return;
 
@@ -71,6 +76,9 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
             return;
         }
 
+        ratingInProgress = true;
+        rateButton.active = false;
+        stack.set(ModDataComponents.RATING_STATE.get(), "rating");
         statusText = Component.translatable("gui.exposure_grading.rating");
         CompletableFuture.runAsync(this::doRating);
     }
@@ -78,38 +86,69 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
     private void doRating() {
         try {
             ItemStack stack = menu.getSlot(0).getItem();
-            if (stack.isEmpty()) return;
+            if (stack.isEmpty()) {
+                Minecraft.getInstance().execute(() -> {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                });
+                return;
+            }
 
             Frame frame = stack.get(Exposure.DataComponents.PHOTOGRAPH_FRAME);
             if (frame == null) {
-                Minecraft.getInstance().execute(() -> statusText = Component.translatable("gui.exposure_grading.error_no_frame"));
+                Minecraft.getInstance().execute(() -> {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                    statusText = Component.translatable("gui.exposure_grading.error_no_frame");
+                    clearRatingState();
+                });
                 return;
             }
 
             String exposureId = frame.identifier().getId().orElse(null);
             if (exposureId == null) {
-                Minecraft.getInstance().execute(() -> statusText = Component.translatable("gui.exposure_grading.error_no_id"));
+                Minecraft.getInstance().execute(() -> {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                    statusText = Component.translatable("gui.exposure_grading.error_no_id");
+                    clearRatingState();
+                });
                 return;
             }
 
             var request = ExposureClient.exposureStore().getOrRequest(exposureId);
             var opt = request.getData();
             if (opt.isEmpty()) {
-                Minecraft.getInstance().execute(() -> statusText = Component.translatable("gui.exposure_grading.error_no_data"));
+                Minecraft.getInstance().execute(() -> {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                    statusText = Component.translatable("gui.exposure_grading.error_no_data");
+                    clearRatingState();
+                });
                 return;
             }
             ExposureData exposureData = opt.get();
 
             String base64 = ImageUtil.exposureToBase64Png(exposureData);
             if (base64.isEmpty()) {
-                Minecraft.getInstance().execute(() -> statusText = Component.translatable("gui.exposure_grading.error_image"));
+                Minecraft.getInstance().execute(() -> {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                    statusText = Component.translatable("gui.exposure_grading.error_image");
+                    clearRatingState();
+                });
                 return;
             }
 
             String apiKey = ModConfig.CLIENT.apiKey().get();
             String apiUrl = ModConfig.CLIENT.apiUrl().get();
             if (apiKey.isEmpty()) {
-                Minecraft.getInstance().execute(() -> statusText = Component.translatable("gui.exposure_grading.error_no_key"));
+                Minecraft.getInstance().execute(() -> {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                    statusText = Component.translatable("gui.exposure_grading.error_no_key");
+                    clearRatingState();
+                });
                 return;
             }
 
@@ -128,18 +167,64 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
             var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
 
             Minecraft.getInstance().execute(() -> {
+                ratingInProgress = false;
+                rateButton.active = true;
                 if (result.success() && result.rating() != null) {
+                    ItemStack slotStack = menu.getSlot(0).getItem();
+                    if (!slotStack.isEmpty()) {
+                        slotStack.set(ModDataComponents.PHOTO_RATING.get(), result.rating());
+                        slotStack.set(ModDataComponents.RATING_STATE.get(), "rated");
+                    }
+                    PhotoRating finalRating = result.rating();
+                    Minecraft mc = Minecraft.getInstance();
+                    ExposureGrading.LOGGER.info("Rating success, writing to server...");
+                    // Singleplayer: access server player's container menu directly from render thread
+                    if (mc.getSingleplayerServer() != null) {
+                        ExposureGrading.LOGGER.info("Singleplayer mode detected");
+                        var serverPlayer = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+                        if (serverPlayer != null) {
+                            ExposureGrading.LOGGER.info("Found server player, containerMenu={}", serverPlayer.containerMenu);
+                            if (serverPlayer.containerMenu instanceof ReviewTableMenu m) {
+                                var ss = m.getSlot(0).getItem();
+                                ExposureGrading.LOGGER.info("Server slot item: empty={}, hasRating={}", ss.isEmpty(), ss.has(ModDataComponents.PHOTO_RATING.get()));
+                                if (!ss.isEmpty()) {
+                                    ss.set(ModDataComponents.PHOTO_RATING.get(), finalRating);
+                                    ExposureGrading.LOGGER.info("Rating written to server slot, now hasRating={}", ss.has(ModDataComponents.PHOTO_RATING.get()));
+                                }
+                            } else {
+                                ExposureGrading.LOGGER.warn("Server player containerMenu is not ReviewTableMenu: {}", serverPlayer.containerMenu);
+                            }
+                        } else {
+                            ExposureGrading.LOGGER.warn("Server player not found!");
+                        }
+                    }
+                    // Dedicated server: C2S network packet as fallback
+                    if (mc.getSingleplayerServer() == null) {
+                        PacketDistributor.sendToServer(new C2SRatingPacket(finalRating, BlockPos.ZERO, "", ""));
+                    }
                     statusText = Component.translatable("gui.exposure_grading.rated");
-                    PacketDistributor.sendToServer(new C2SRatingPacket(result.rating()));
-                    currentRating = true;
                 } else {
+                    ItemStack slotStack = menu.getSlot(0).getItem();
+                    if (!slotStack.isEmpty()) {
+                        slotStack.remove(ModDataComponents.RATING_STATE.get());
+                    }
                     statusText = Component.literal("§c" + result.message());
                 }
             });
         } catch (Exception e) {
             Minecraft.getInstance().execute(() -> {
+                ratingInProgress = false;
+                rateButton.active = true;
                 statusText = Component.literal("§c" + e.getMessage());
+                clearRatingState();
             });
+        }
+    }
+
+    private void clearRatingState() {
+        ItemStack s = menu.getSlot(0).getItem();
+        if (!s.isEmpty()) {
+            s.remove(ModDataComponents.RATING_STATE.get());
         }
     }
 
@@ -148,44 +233,10 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         guiGraphics.blit(bgTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
-    private String stars(float score) {
-        int full = (int) (score / 2);
-        float remainder = score / 2 - full;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < full && i < 5; i++) sb.append("★");
-        if (remainder >= 0.25f && full < 5) sb.append("⯪");
-        for (int i = sb.length(); i < 5; i++) sb.append("☆");
-        return sb.toString();
-    }
-
-    private float total(PhotoRating r) {
-        double w1 = ModConfig.CLIENT.weightComposition().get();
-        double w2 = ModConfig.CLIENT.weightTone().get();
-        double w3 = ModConfig.CLIENT.weightCreativity().get();
-        double w4 = ModConfig.CLIENT.weightContent().get();
-        double sum = w1 + w2 + w3 + w4;
-        if (sum == 0) return 0;
-        return (float) ((r.composition() * w1 + r.tone() * w2 + r.creativity() * w3 + r.content() * w4) / sum);
-    }
-
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         super.renderLabels(guiGraphics, mouseX, mouseY);
-        ItemStack stack = menu.getSlot(0).getItem();
-        if (stack.has(ModDataComponents.PHOTO_RATING.get())) {
-            var r = stack.get(ModDataComponents.PHOTO_RATING.get());
-            if (r != null) {
-                guiGraphics.drawString(this.font, "构图 " + stars(r.composition()), 80, 12, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "影调 " + stars(r.tone()), 80, 22, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "创意 " + stars(r.creativity()), 80, 32, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "内容 " + stars(r.content()), 80, 42, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "总分 " + stars(total(r)), 80, 54, 0xFFFFFF);
-                String comment = r.comment();
-                if (comment.length() > 22) comment = comment.substring(0, 22) + "..";
-                guiGraphics.drawString(this.font, comment, 80, 66, 0xFFFFFF);
-            }
-        }
-        guiGraphics.drawString(this.font, statusText, 80, 80, 0xAAAAAA);
+        guiGraphics.drawString(this.font, statusText, 80, 68, 0xAAAAAA);
     }
 
     @Override

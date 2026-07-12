@@ -34,6 +34,7 @@ public class ReviewTableHandler implements IItemHandlerModifiable {
             this.stack = stack.copyWithCount(1);
             if (blockEntity != null) {
                 blockEntity.setPhotograph(this.stack);
+                this.stack = blockEntity.getPhotograph(); // keep same reference as BE
             }
         }
         return ItemStack.EMPTY;
@@ -47,6 +48,7 @@ public class ReviewTableHandler implements IItemHandlerModifiable {
             this.stack = ItemStack.EMPTY;
             if (blockEntity != null) {
                 blockEntity.setPhotograph(ItemStack.EMPTY);
+                this.stack = blockEntity.getPhotograph();
             }
         }
         return result;
@@ -62,6 +64,7 @@ public class ReviewTableHandler implements IItemHandlerModifiable {
         this.stack = stack.copyWithCount(1);
         if (blockEntity != null) {
             blockEntity.setPhotograph(this.stack);
+            this.stack = blockEntity.getPhotograph(); // keep same reference as BE
         }
     }
 

@@ -25,4 +25,10 @@ public class ModDataComponents {
                     .persistent(CODEC)
                     .networkSynchronized(PhotoRating.STREAM_CODEC)
                     .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> RATING_STATE = COMPONENTS.register("rating_state",
+            () -> DataComponentType.<String>builder()
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8)
+                    .build());
 }
