@@ -16,7 +16,7 @@ public class GlmApiClient {
     public static PhotoRateResult call(String apiUrl, String apiKey, String prompt, String base64Png) {
         try {
             JsonObject body = new JsonObject();
-            body.addProperty("model", "glm-4v-flash");
+            body.addProperty("model", "glm-4.6v-flash");
 
             JsonArray messages = new JsonArray();
             JsonObject userMsg = new JsonObject();
