@@ -19,11 +19,11 @@ public class ClientSetup {
             var r = stack.get(ModDataComponents.PHOTO_RATING.get());
             if (r != null) {
                 var df = new DecimalFormat("#.#");
-                event.getToolTip().add(Component.literal("§e§l评分:"));
-                event.getToolTip().add(Component.literal(" §e构图 " + stars(r.composition())));
-                event.getToolTip().add(Component.literal(" §e影调 " + stars(r.tone())));
-                event.getToolTip().add(Component.literal(" §e创意 " + stars(r.creativity())));
-                event.getToolTip().add(Component.literal(" §e内容 " + stars(r.content())));
+                event.getToolTip().add(Component.literal("§f§l评分:"));
+                event.getToolTip().add(Component.literal(" §f构图 " + stars(r.composition())));
+                event.getToolTip().add(Component.literal(" §f影调 " + stars(r.tone())));
+                event.getToolTip().add(Component.literal(" §f创意 " + stars(r.creativity())));
+                event.getToolTip().add(Component.literal(" §f内容 " + stars(r.content())));
             }
         }
     }
