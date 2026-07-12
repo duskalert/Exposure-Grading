@@ -147,6 +147,16 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         guiGraphics.blit(bgTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
+    private String stars(float score) {
+        int full = (int) (score / 2);
+        float remainder = score / 2 - full;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < full && i < 5; i++) sb.append("★");
+        if (remainder >= 0.25f && full < 5) sb.append("⯪");
+        for (int i = sb.length(); i < 5; i++) sb.append("☆");
+        return sb.toString();
+    }
+
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         super.renderLabels(guiGraphics, mouseX, mouseY);
@@ -154,10 +164,10 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         if (stack.has(ModDataComponents.PHOTO_RATING.get())) {
             var r = stack.get(ModDataComponents.PHOTO_RATING.get());
             if (r != null) {
-                guiGraphics.drawString(this.font, "构图: " + r.composition(), 80, 58, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "影调: " + r.tone(), 80, 68, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "创意: " + r.creativity(), 80, 78, 0xFFFFFF);
-                guiGraphics.drawString(this.font, "内容: " + r.content(), 80, 88, 0xFFFFFF);
+                guiGraphics.drawString(this.font, "构图 " + stars(r.composition()), 80, 58, 0xFFD700);
+                guiGraphics.drawString(this.font, "影调 " + stars(r.tone()), 80, 68, 0xFFD700);
+                guiGraphics.drawString(this.font, "创意 " + stars(r.creativity()), 80, 78, 0xFFD700);
+                guiGraphics.drawString(this.font, "内容 " + stars(r.content()), 80, 88, 0xFFD700);
             }
         }
         guiGraphics.drawString(this.font, statusText, 80, 108, 0xAAAAAA);
