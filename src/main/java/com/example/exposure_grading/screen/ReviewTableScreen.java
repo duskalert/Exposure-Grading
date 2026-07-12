@@ -112,7 +112,18 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
                 return;
             }
 
-            String prompt = "请以JSON格式评价这张照片，包含字段：composition(float 构图)、tone(float 影调)、creativity(float 创意)、content(float 内容)、comment(string 评语)。只返回JSON，不要其他文字。";
+            String prompt = """
+你是一位专业的摄影评委。请从以下四个维度评价这张照片，每项打分0-10分（精确到一位小数），并给出简短评语。
+
+评分标准：
+- 构图(composition)：主体突出、画面平衡、线条引导、黄金分割/三分法等构图手法的运用
+- 影调(tone)：光影层次、明暗对比、色彩协调、氛围营造
+- 创意(creativity)：拍摄角度、主题表达、独特视角、想象力
+- 内容(content)：画面故事性、情感传达、主体吸引力、趣味性
+
+请严格按照以下JSON格式返回，不要包含其他文字：
+{"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "评语"}
+""";
             var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
 
             Minecraft.getInstance().execute(() -> {
