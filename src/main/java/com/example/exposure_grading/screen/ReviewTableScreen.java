@@ -4,6 +4,7 @@ import com.example.exposure_grading.ExposureGrading;
 import com.example.exposure_grading.ModDataComponents;
 import com.example.exposure_grading.api.GlmApiClient;
 import com.example.exposure_grading.api.ImageUtil;
+import com.example.exposure_grading.data.PhotoRating;
 import com.example.exposure_grading.config.ModConfig;
 import com.example.exposure_grading.menu.ReviewTableMenu;
 import com.example.exposure_grading.network.C2SRatingPacket;
@@ -157,6 +158,16 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         return sb.toString();
     }
 
+    private float total(PhotoRating r) {
+        double w1 = ModConfig.CLIENT.weightComposition().get();
+        double w2 = ModConfig.CLIENT.weightTone().get();
+        double w3 = ModConfig.CLIENT.weightCreativity().get();
+        double w4 = ModConfig.CLIENT.weightContent().get();
+        double sum = w1 + w2 + w3 + w4;
+        if (sum == 0) return 0;
+        return (float) ((r.composition() * w1 + r.tone() * w2 + r.creativity() * w3 + r.content() * w4) / sum);
+    }
+
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         super.renderLabels(guiGraphics, mouseX, mouseY);
@@ -164,13 +175,17 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         if (stack.has(ModDataComponents.PHOTO_RATING.get())) {
             var r = stack.get(ModDataComponents.PHOTO_RATING.get());
             if (r != null) {
-                guiGraphics.drawString(this.font, "构图 " + stars(r.composition()), 80, 58, 0xFFD700);
-                guiGraphics.drawString(this.font, "影调 " + stars(r.tone()), 80, 68, 0xFFD700);
-                guiGraphics.drawString(this.font, "创意 " + stars(r.creativity()), 80, 78, 0xFFD700);
-                guiGraphics.drawString(this.font, "内容 " + stars(r.content()), 80, 88, 0xFFD700);
+                guiGraphics.drawString(this.font, "构图 " + stars(r.composition()), 80, 46, 0xFFD700);
+                guiGraphics.drawString(this.font, "影调 " + stars(r.tone()), 80, 56, 0xFFD700);
+                guiGraphics.drawString(this.font, "创意 " + stars(r.creativity()), 80, 66, 0xFFD700);
+                guiGraphics.drawString(this.font, "内容 " + stars(r.content()), 80, 76, 0xFFD700);
+                guiGraphics.drawString(this.font, "总分 " + stars(total(r)), 80, 88, 0xFF4444);
+                String comment = r.comment();
+                if (comment.length() > 18) comment = comment.substring(0, 18) + "..";
+                guiGraphics.drawString(this.font, "§7" + comment, 80, 100, 0xAAAAAA);
             }
         }
-        guiGraphics.drawString(this.font, statusText, 80, 108, 0xAAAAAA);
+        guiGraphics.drawString(this.font, statusText, 80, 112, 0xAAAAAA);
     }
 
     @Override
