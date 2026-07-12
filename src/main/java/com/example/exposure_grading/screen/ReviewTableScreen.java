@@ -175,17 +175,17 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         if (stack.has(ModDataComponents.PHOTO_RATING.get())) {
             var r = stack.get(ModDataComponents.PHOTO_RATING.get());
             if (r != null) {
-                guiGraphics.drawString(this.font, "构图 " + stars(r.composition()), 80, 46, 0xFFD700);
-                guiGraphics.drawString(this.font, "影调 " + stars(r.tone()), 80, 56, 0xFFD700);
-                guiGraphics.drawString(this.font, "创意 " + stars(r.creativity()), 80, 66, 0xFFD700);
-                guiGraphics.drawString(this.font, "内容 " + stars(r.content()), 80, 76, 0xFFD700);
-                guiGraphics.drawString(this.font, "总分 " + stars(total(r)), 80, 88, 0xFF4444);
+                guiGraphics.drawString(this.font, "构图 " + stars(r.composition()), 80, 12, 0xFFD700);
+                guiGraphics.drawString(this.font, "影调 " + stars(r.tone()), 80, 22, 0xFFD700);
+                guiGraphics.drawString(this.font, "创意 " + stars(r.creativity()), 80, 32, 0xFFD700);
+                guiGraphics.drawString(this.font, "内容 " + stars(r.content()), 80, 42, 0xFFD700);
+                guiGraphics.drawString(this.font, "总分 " + stars(total(r)), 80, 54, 0xFF4444);
                 String comment = r.comment();
-                if (comment.length() > 18) comment = comment.substring(0, 18) + "..";
-                guiGraphics.drawString(this.font, "§7" + comment, 80, 100, 0xAAAAAA);
+                if (comment.length() > 22) comment = comment.substring(0, 22) + "..";
+                guiGraphics.drawString(this.font, comment, 80, 66, 0xAAAAAA);
             }
         }
-        guiGraphics.drawString(this.font, statusText, 80, 112, 0xAAAAAA);
+        guiGraphics.drawString(this.font, statusText, 80, 80, 0xAAAAAA);
     }
 
     @Override

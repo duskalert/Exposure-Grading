@@ -30,6 +30,7 @@ public class ExposureGrading {
 
         if (FMLEnvironment.dist.isClient()) {
             modBus.addListener(RegisterMenuScreensEvent.class, ClientSetup::onRegisterMenuScreens);
+            modBus.addListener(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent.class, ClientSetup::onItemTooltip);
         }
     }
 }
