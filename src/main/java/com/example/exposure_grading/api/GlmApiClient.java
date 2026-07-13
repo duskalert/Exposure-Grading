@@ -79,11 +79,12 @@ public class GlmApiClient {
     private static PhotoRating parseRating(String text) {
         try {
             JsonObject json = JsonParser.parseString(text).getAsJsonObject();
+            float comp = getFloat(json, "composition");
+            float tone = getFloat(json, "tone");
+            float creat = getFloat(json, "creativity");
+            float cont = getFloat(json, "content");
             return new PhotoRating(
-                    getFloat(json, "composition"),
-                    getFloat(json, "tone"),
-                    getFloat(json, "creativity"),
-                    getFloat(json, "content"),
+                    comp, tone, creat, cont, 0f,
                     getString(json, "comment")
             );
         } catch (Exception e) {

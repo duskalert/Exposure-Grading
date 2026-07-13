@@ -15,7 +15,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -67,6 +67,12 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
 
         if (stack.has(ModDataComponents.PHOTO_RATING.get())) {
             statusText = Component.translatable("gui.exposure_grading.already_rated");
+            return;
+        }
+
+        String state = stack.get(ModDataComponents.RATING_STATE.get());
+        if ("rating".equals(state)) {
+            statusText = Component.translatable("gui.exposure_grading.rating");
             return;
         }
 
@@ -139,16 +145,11 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
             BlockPos bePos = menu.getBlockEntity() != null ? menu.getBlockEntity().getBlockPos() : null;
 
             Minecraft.getInstance().execute(() -> {
-                ratingInProgress = false;
-                rateButton.active = true;
                 if (bePos != null) {
-                    var pkt = new C2SRatingPacket(bePos, pngBytes);
-                    var conn = Minecraft.getInstance().getConnection();
-                    if (conn != null) {
-                        conn.send(new ServerboundCustomPayloadPacket(pkt));
-                    }
-                    statusText = Component.translatable("gui.exposure_grading.rating_sent");
+                    PacketDistributor.sendToServer(new C2SRatingPacket(bePos, pngBytes));
                 } else {
+                    ratingInProgress = false;
+                    rateButton.active = true;
                     clearRatingState();
                     statusText = Component.literal("§cBlock entity not found!");
                 }

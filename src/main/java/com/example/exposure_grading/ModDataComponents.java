@@ -17,6 +17,7 @@ public class ModDataComponents {
             Codec.FLOAT.fieldOf("tone").forGetter(PhotoRating::tone),
             Codec.FLOAT.fieldOf("creativity").forGetter(PhotoRating::creativity),
             Codec.FLOAT.fieldOf("content").forGetter(PhotoRating::content),
+            Codec.FLOAT.optionalFieldOf("totalScore", 0f).forGetter(PhotoRating::totalScore),
             Codec.STRING.fieldOf("comment").forGetter(PhotoRating::comment)
     ).apply(instance, PhotoRating::new));
 

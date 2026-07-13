@@ -9,6 +9,7 @@
   "gui.exposure_grading.error_no_id": "No exposure ID",
   "gui.exposure_grading.error_no_data": "No exposure data",
   "gui.exposure_grading.error_image": "Image conversion failed",
+  "gui.exposure_grading.rating_sent": "Rating request sent",
   "gui.exposure_grading.error_no_key": "API key not set",
   "itemGroup.exposure_grading": "Exposure: Grading"
 }

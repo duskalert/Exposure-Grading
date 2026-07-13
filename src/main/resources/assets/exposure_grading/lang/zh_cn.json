@@ -9,6 +9,7 @@
   "gui.exposure_grading.error_no_id": "无法获取照片ID",
   "gui.exposure_grading.error_no_data": "无法获取照片数据",
   "gui.exposure_grading.error_image": "图片转换失败",
+  "gui.exposure_grading.rating_sent": "已发送评分请求",
   "gui.exposure_grading.error_no_key": "未设置API密钥",
   "itemGroup.exposure_grading": "曝光评级"
 }

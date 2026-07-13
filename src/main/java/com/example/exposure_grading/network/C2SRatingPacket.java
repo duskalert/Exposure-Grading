@@ -6,11 +6,10 @@ import com.example.exposure_grading.api.GlmApiClient;
 import com.example.exposure_grading.block.ReviewTableBlockEntity;
 import com.example.exposure_grading.config.ModConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.concurrent.CompletableFuture;
@@ -26,16 +25,18 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
     }
 
     public static void handle(C2SRatingPacket packet, IPayloadContext context) {
+        System.out.println("C2S HANDLER START pngData.length=" + packet.pngData.length);
         context.enqueueWork(() -> {
             try {
-                ExposureGrading.LOGGER.info("C2S handler executing");
                 String apiKey = ModConfig.SERVER.apiKey().get();
                 String apiUrl = ModConfig.SERVER.apiUrl().get();
-                ExposureGrading.LOGGER.info("apiKey empty={}, apiUrl={}", apiKey.isEmpty(), apiUrl);
                 if (apiKey.isEmpty()) return;
 
                 BlockPos pos = packet.pos.immutable();
                 byte[] data = packet.pngData;
+
+                // Set "rating" state immediately on server BE
+                setRatingState(pos, "rating", context);
 
                 CompletableFuture.runAsync(() -> {
                     try {
@@ -53,11 +54,24 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
 {"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "评语"}
 """;
                         var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
-                        ExposureGrading.LOGGER.info("API result: success={}", result.success());
-                        if (!result.success() || result.rating() == null) return;
+                        if (!result.success() || result.rating() == null) {
+                            setRatingState(pos, null, context);
+                            return;
+                        }
 
-                        context.enqueueWork(() -> writeRating(pos, result.rating(), context));
+                        // Compute total with server weights
+                        com.example.exposure_grading.data.PhotoRating raw = result.rating();
+                        double w1 = ModConfig.SERVER.weightComposition().get();
+                        double w2 = ModConfig.SERVER.weightTone().get();
+                        double w3 = ModConfig.SERVER.weightCreativity().get();
+                        double w4 = ModConfig.SERVER.weightContent().get();
+                        double sum = w1 + w2 + w3 + w4;
+                        float total = sum == 0 ? 0 : (float)((raw.composition() * w1 + raw.tone() * w2 + raw.creativity() * w3 + raw.content() * w4) / sum);
+                        var rated = new com.example.exposure_grading.data.PhotoRating(raw.composition(), raw.tone(), raw.creativity(), raw.content(), total, raw.comment());
+
+                        context.enqueueWork(() -> writeRating(pos, rated, context));
                     } catch (Exception e) {
+                        setRatingState(pos, null, context);
                         ExposureGrading.LOGGER.error("Rating API call failed", e);
                     }
                 });
@@ -67,18 +81,30 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
         });
     }
 
+    private static void setRatingState(BlockPos pos, String state, IPayloadContext context) {
+        try {
+            if (context.player().level().getBlockEntity(pos) instanceof ReviewTableBlockEntity be) {
+                if (be.hasPhotograph()) {
+                    if (state != null) {
+                        be.getPhotograph().set(ModDataComponents.RATING_STATE.get(), state);
+                    } else {
+                        be.getPhotograph().remove(ModDataComponents.RATING_STATE.get());
+                    }
+                    be.setChanged();
+                }
+            }
+        } catch (Exception e) {
+            ExposureGrading.LOGGER.error("Set rating state failed", e);
+        }
+    }
+
     private static void writeRating(BlockPos pos, com.example.exposure_grading.data.PhotoRating rating, IPayloadContext context) {
         try {
             if (context.player().level().getBlockEntity(pos) instanceof ReviewTableBlockEntity be) {
                 if (be.hasPhotograph()) {
                     be.getPhotograph().set(ModDataComponents.PHOTO_RATING.get(), rating);
+                    be.getPhotograph().set(ModDataComponents.RATING_STATE.get(), "rated");
                     be.setChanged();
-                    return;
-                }
-            }
-            for (ItemStack item : context.player().getInventory().items) {
-                if (!item.isEmpty() && item.get(ModDataComponents.RATING_STATE.get()) != null) {
-                    item.set(ModDataComponents.PHOTO_RATING.get(), rating);
                     return;
                 }
             }
@@ -87,7 +113,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
         }
     }
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SRatingPacket> CODEC = StreamCodec.of(
+    public static final StreamCodec<FriendlyByteBuf, C2SRatingPacket> CODEC = StreamCodec.of(
             (buf, p) -> {
                 buf.writeBlockPos(p.pos);
                 buf.writeVarInt(p.pngData.length);
