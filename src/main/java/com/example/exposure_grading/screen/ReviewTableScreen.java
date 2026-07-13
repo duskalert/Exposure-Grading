@@ -178,6 +178,7 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         ItemStack s = menu.getSlot(0).getItem();
         if (!s.isEmpty()) {
             s.remove(ModDataComponents.RATING_STATE.get());
+            s.remove(ModDataComponents.RATING_START_TIME.get());
         }
     }
 

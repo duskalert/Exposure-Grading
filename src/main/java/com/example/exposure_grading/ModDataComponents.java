@@ -4,6 +4,8 @@ import com.example.exposure_grading.data.PhotoRating;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -31,5 +33,11 @@ public class ModDataComponents {
             () -> DataComponentType.<String>builder()
                     .persistent(Codec.STRING)
                     .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8)
+                    .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> RATING_START_TIME = COMPONENTS.register("rating_start_time",
+            () -> DataComponentType.<Long>builder()
+                    .persistent(Codec.LONG)
+                    .networkSynchronized(StreamCodec.of(FriendlyByteBuf::writeLong, FriendlyByteBuf::readLong))
                     .build());
 }

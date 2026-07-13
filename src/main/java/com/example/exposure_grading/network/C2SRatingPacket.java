@@ -92,8 +92,10 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                 if (be.hasPhotograph()) {
                     if (state != null) {
                         be.getPhotograph().set(ModDataComponents.RATING_STATE.get(), state);
+                        be.getPhotograph().set(ModDataComponents.RATING_START_TIME.get(), System.currentTimeMillis());
                     } else {
                         be.getPhotograph().remove(ModDataComponents.RATING_STATE.get());
+                        be.getPhotograph().remove(ModDataComponents.RATING_START_TIME.get());
                     }
                     be.setChanged();
                 }
@@ -109,6 +111,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                 if (be.hasPhotograph()) {
                     be.getPhotograph().set(ModDataComponents.PHOTO_RATING.get(), rating);
                     be.getPhotograph().set(ModDataComponents.RATING_STATE.get(), "rated");
+                    be.getPhotograph().remove(ModDataComponents.RATING_START_TIME.get());
                     be.setChanged();
                     ExposureGrading.LOGGER.info("Rating written to BE at {}", pos);
                     return;

@@ -11,6 +11,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import static com.example.exposure_grading.config.ModConfig.CLIENT_SPEC;
 import static com.example.exposure_grading.config.ModConfig.SERVER_SPEC;
@@ -35,7 +36,7 @@ public class ExposureGrading {
 
         if (FMLEnvironment.dist.isClient()) {
             modBus.addListener(RegisterMenuScreensEvent.class, ClientSetup::onRegisterMenuScreens);
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ClientSetup::onItemTooltip);
+            NeoForge.EVENT_BUS.addListener(ClientSetup::onItemTooltip);
         }
     }
 }
