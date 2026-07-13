@@ -58,6 +58,16 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
         rateButton = addRenderableWidget(Button.builder(Component.translatable("gui.exposure_grading.rate"), button -> onRate())
                 .bounds(leftPos + 79, topPos + 34, 60, 20)
                 .build());
+
+        ItemStack stack = menu.getSlot(0).getItem();
+        if (!stack.isEmpty()) {
+            String state = stack.get(ModDataComponents.RATING_STATE.get());
+            if ("rating".equals(state)) {
+                ratingInProgress = true;
+                rateButton.active = false;
+                statusText = Component.translatable("gui.exposure_grading.rating");
+            }
+        }
     }
 
     private void onRate() {
