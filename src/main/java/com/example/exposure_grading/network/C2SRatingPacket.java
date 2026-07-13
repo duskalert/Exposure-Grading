@@ -30,7 +30,10 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
             try {
                 String apiKey = ModConfig.SERVER.apiKey().get();
                 String apiUrl = ModConfig.SERVER.apiUrl().get();
-                if (apiKey.isEmpty()) return;
+                if (apiKey.isEmpty()) {
+                    ExposureGrading.LOGGER.error("API key is empty, aborting rating");
+                    return;
+                }
 
                 BlockPos pos = packet.pos.immutable();
                 byte[] data = packet.pngData;
@@ -41,6 +44,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                 CompletableFuture.runAsync(() -> {
                     try {
                         String base64 = java.util.Base64.getEncoder().encodeToString(data);
+                        ExposureGrading.LOGGER.info("Calling API with {} bytes of PNG data", data.length);
                         String prompt = """
 你是一位专业的摄影评委。请从以下四个维度评价这张照片，每项打分0-10分（精确到一位小数），并给出简短评语。
 
@@ -54,6 +58,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
 {"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "评语"}
 """;
                         var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
+                        ExposureGrading.LOGGER.info("API call completed, success={}, message={}", result.success(), result.message());
                         if (!result.success() || result.rating() == null) {
                             setRatingState(pos, null, context);
                             return;
@@ -105,6 +110,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                     be.getPhotograph().set(ModDataComponents.PHOTO_RATING.get(), rating);
                     be.getPhotograph().set(ModDataComponents.RATING_STATE.get(), "rated");
                     be.setChanged();
+                    ExposureGrading.LOGGER.info("Rating written to BE at {}", pos);
                     return;
                 }
             }
