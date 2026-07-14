@@ -104,7 +104,42 @@ Rated photographs carry `exposure_grading:photo_rating`:
 }
 ```
 
-Accessible via KubeJS: `item.nbt.getCompound('exposure_grading:photo_rating')`
+### Reading via KubeJS / 通过 KubeJS 读取
+
+```javascript
+// Get the rating data component from an item
+let nbt = item.nbt
+if (nbt && nbt.contains('exposure_grading:photo_rating')) {
+    let r = nbt.getCompound('exposure_grading:photo_rating')
+    let composition = r.getDouble('composition')   // 6.0
+    let tone        = r.getDouble('tone')           // 7.2
+    let creativity  = r.getDouble('creativity')     // 5.0
+    let content     = r.getDouble('content')        // 5.5
+    let totalScore  = r.getDouble('totalScore')     // 5.925
+    let comment     = r.getString('comment')        // "构图合理但缺乏亮点"
+
+    console.log(`总分: ${totalScore}`)
+}
+```
+
+### Example use cases / 示例用途
+
+**Recipe unlock for high-rated photos:**
+```javascript
+// Only allow crafting if photograph has totalScore >= 6
+event.remove(item => item.nbt?.getCompound('exposure_grading:photo_rating')?.getDouble('totalScore') < 6)
+```
+
+**Reward for excellent photos:**
+```javascript
+ItemEvents.entityInteracted(event => {
+    let r = event.getItem()?.nbt?.getCompound('exposure_grading:photo_rating')
+    if (r && r.getDouble('totalScore') >= 7) {
+        event.player.tell('杰出的摄影作品！')
+        event.player.give('minecraft:diamond')
+    }
+})
+```
 
 ## License / 许可
 
