@@ -183,6 +183,22 @@ public class ReviewTableScreen extends AbstractContainerScreen<ReviewTableMenu> 
     }
 
     @Override
+    public void containerTick() {
+        super.containerTick();
+        if (ratingInProgress) {
+            ItemStack stack = menu.getSlot(0).getItem();
+            if (!stack.isEmpty()) {
+                String state = stack.get(ModDataComponents.RATING_STATE.get());
+                if ("rated".equals(state)) {
+                    ratingInProgress = false;
+                    rateButton.active = true;
+                    statusText = Component.translatable("gui.exposure_grading.rated");
+                }
+            }
+        }
+    }
+
+    @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(bgTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }

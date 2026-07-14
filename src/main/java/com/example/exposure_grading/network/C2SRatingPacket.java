@@ -46,25 +46,29 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                         String base64 = java.util.Base64.getEncoder().encodeToString(data);
                         ExposureGrading.LOGGER.info("Calling API with {} bytes of PNG data", data.length);
                         String prompt = """
-你是一位专业的 Minecraft 摄影评委。请从以下四个维度评价这张像素风格照片，每项打分0-10分（精确到一位小数，建议用 6.5 而非 6.5），并给出简短评语。
+你是一位严格的 Minecraft 摄影评委。请从以下四个维度评价这张像素风格照片，每项打分0-10分（精确到一位小数，如 4.5、6.0），并给出简短评语。
 
-评分标准：
-1. 构图(composition)（权重 1.0）：主体是否突出、画面是否平衡、是否运用对称/引导线/框架等手法、像素场景下的视觉中心把控
-2. 影调(tone)（权重 1.0）：光影层次是否丰富、昼夜/天气氛围是否恰当、色彩搭配是否协调、整体色调感染力
-3. 创意(creativity)（权重 1.0）：拍摄角度是否独特、建筑/场景设计是否有想象力、是否展现他人未见过的视角、构图是否有巧思
-4. 内容(content)（权重 1.0）：画面是否有故事感、能否引发情感共鸣、主体是否有吸引力、场景互动是否有趣味性
+评分标准（请严格控制分数，不要给虚高分数）：
+1. 构图(composition)：主体是否突出、画面是否平衡对称、引导线与框架运用、视觉中心把控
+2. 影调(tone)：光影层次是否丰富、色彩搭配是否协调、昼夜/天气氛围营造、整体色调感染力
+3. 创意(creativity)：拍摄角度是否独特、场景设计是否有想象力、是否展现他人未见过的视角、构图巧思
+4. 内容(content)：画面是否有故事感、能否引发情感共鸣、主体是否有吸引力、场景互动趣味性
 
-分数参考：
-- 0-3：基础薄弱，有明显欠缺
-- 4-5：中规中矩，无明显亮点也无大错
-- 6-7：良好，有一定亮点
-- 8-9：优秀，令人印象深刻
-- 10：完美
+分数参照（请严格遵守）：
+- 1-4：有明显缺陷或欠缺
+- 5：及格，中规中矩
+- 6：还行，有小亮点
+- 7：良好，有值得肯定的地方
+- 8：优秀，令人印象深刻
+- 9：非常出色
+- 10：完美无缺
+
+请务必根据照片实际水平客观打分，不要因为同情而给高分。大多数普通照片应该在 4-6 分之间。
 
 注意：这是 Minecraft 像素风格摄影作品，请用相应的审美标准评判，不要与真实摄影混为一谈。
 
 请只输出以下 JSON，不要包含任何其他文字、注解、代码块标记：
-{"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "一句话总评"}
+{"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "一句简评"}
 """;
                         var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
                         ExposureGrading.LOGGER.info("API call completed, success={}, message={}", result.success(), result.message());
