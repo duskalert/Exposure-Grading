@@ -83,4 +83,4 @@ Accessible via KubeJS: `item.nbt.getCompound('exposure_grading:photo_rating').ge
 
 ## License / 许可
 
-MIT
+GNU General Public License v3.0
