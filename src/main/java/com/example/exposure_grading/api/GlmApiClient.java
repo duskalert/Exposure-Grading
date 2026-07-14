@@ -78,7 +78,13 @@ public class GlmApiClient {
 
     private static PhotoRating parseRating(String text) {
         try {
-            JsonObject json = JsonParser.parseString(text).getAsJsonObject();
+            String clean = text;
+            // strip markdown code blocks and json language tag
+            clean = clean.replaceAll("```json\\s*", "");
+            clean = clean.replaceAll("\\s*```", "");
+            // strip any leading/trailing whitespace or newlines
+            clean = clean.trim();
+            JsonObject json = JsonParser.parseString(clean).getAsJsonObject();
             float comp = getFloat(json, "composition");
             float tone = getFloat(json, "tone");
             float creat = getFloat(json, "creativity");
@@ -88,6 +94,7 @@ public class GlmApiClient {
                     getString(json, "comment")
             );
         } catch (Exception e) {
+            ExposureGrading.LOGGER.warn("Failed to parse rating from: {}", text);
             return null;
         }
     }
