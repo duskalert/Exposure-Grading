@@ -84,3 +84,7 @@ Accessible via KubeJS: `item.nbt.getCompound('exposure_grading:photo_rating').ge
 ## License / 许可
 
 GNU General Public License v3.0
+
+---
+
+*This project is the product of vibe coding using [opencode](https://opencode.ai) + DeepSeek V4 Flash.*
