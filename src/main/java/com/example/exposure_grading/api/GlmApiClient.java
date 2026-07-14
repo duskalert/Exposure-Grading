@@ -13,10 +13,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class GlmApiClient {
-    public static PhotoRateResult call(String apiUrl, String apiKey, String prompt, String base64Png) {
+    public static PhotoRateResult call(String apiUrl, String apiKey, String modelName, String prompt, String base64Png) {
         try {
             JsonObject body = new JsonObject();
-            body.addProperty("model", "glm-4v-flash");
+            body.addProperty("model", modelName);
 
             JsonArray messages = new JsonArray();
             JsonObject userMsg = new JsonObject();

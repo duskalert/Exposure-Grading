@@ -70,7 +70,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
 请只输出以下 JSON，不要包含任何其他文字、注解、代码块标记：
 {"composition": 0.0, "tone": 0.0, "creativity": 0.0, "content": 0.0, "comment": "一句简评"}
 """;
-                        var result = GlmApiClient.call(apiUrl, apiKey, prompt, base64);
+                        var result = GlmApiClient.call(apiUrl, apiKey, ModConfig.SERVER.modelName().get(), prompt, base64);
                         ExposureGrading.LOGGER.info("API call completed, success={}, message={}", result.success(), result.message());
                         if (!result.success() || result.rating() == null) {
                             setRatingState(pos, null, context);

@@ -23,14 +23,15 @@ public class ModConfig {
 
         var serverPair = new ModConfigSpec.Builder().configure(builder -> {
             builder.push("server");
-            var k = builder.comment("API Key for GLM-4V-Flash").define("apiKey", "");
+            var k = builder.comment("API Key").define("apiKey", "");
             var u = builder.comment("API endpoint URL").define("apiUrl", "https://open.bigmodel.cn/api/paas/v4/chat/completions");
+            var m = builder.comment("Model name (e.g. glm-4v-flash, glm-4.6v-flash)").define("modelName", "glm-4v-flash");
             var w1 = builder.comment("Weight for composition").defineInRange("weightComposition", 1.0d, 0.0d, 1.0d);
             var w2 = builder.comment("Weight for tone").defineInRange("weightTone", 1.0d, 0.0d, 1.0d);
             var w3 = builder.comment("Weight for creativity").defineInRange("weightCreativity", 1.0d, 0.0d, 1.0d);
             var w4 = builder.comment("Weight for content").defineInRange("weightContent", 1.0d, 0.0d, 1.0d);
             builder.pop();
-            return new Server(k, u, w1, w2, w3, w4);
+            return new Server(k, u, m, w1, w2, w3, w4);
         });
         SERVER = serverPair.getKey();
         SERVER_SPEC = serverPair.getValue();
@@ -46,6 +47,7 @@ public class ModConfig {
     public record Server(
             ModConfigSpec.ConfigValue<String> apiKey,
             ModConfigSpec.ConfigValue<String> apiUrl,
+            ModConfigSpec.ConfigValue<String> modelName,
             ModConfigSpec.ConfigValue<Double> weightComposition,
             ModConfigSpec.ConfigValue<Double> weightTone,
             ModConfigSpec.ConfigValue<Double> weightCreativity,
