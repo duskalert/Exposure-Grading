@@ -7,6 +7,7 @@ import com.example.exposure_grading.block.ReviewTableBlockEntity;
 import com.example.exposure_grading.config.ModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +33,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                 String apiUrl = ModConfig.SERVER.apiUrl().get();
                 if (apiKey.isEmpty()) {
                     ExposureGrading.LOGGER.error("API key is empty, aborting rating");
+                    sendError(context, "API 密钥未配置，请在配置文件中设置 apiKey");
                     return;
                 }
 
@@ -73,6 +75,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                         var result = GlmApiClient.call(apiUrl, apiKey, ModConfig.SERVER.modelName().get(), prompt, base64);
                         ExposureGrading.LOGGER.info("API call completed, success={}, message={}", result.success(), result.message());
                         if (!result.success() || result.rating() == null) {
+                            sendError(context, "评分请求失败: " + result.message() + "，请稍后再试");
                             setRatingState(pos, null, context);
                             return;
                         }
@@ -90,6 +93,7 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                         context.enqueueWork(() -> writeRating(pos, rated, context));
                     } catch (Exception e) {
                         setRatingState(pos, null, context);
+                        sendError(context, "评分异常: " + e.getMessage() + "，请稍后再试");
                         ExposureGrading.LOGGER.error("Rating API call failed", e);
                     }
                 });
@@ -97,6 +101,11 @@ public record C2SRatingPacket(BlockPos pos, byte[] pngData) implements CustomPac
                 ExposureGrading.LOGGER.error("Rating trigger failed", e);
             }
         });
+    }
+
+    private static void sendError(IPayloadContext context, String msg) {
+        context.enqueueWork(() ->
+                context.player().sendSystemMessage(Component.literal("§c[曝光评级] " + msg)));
     }
 
     private static void setRatingState(BlockPos pos, String state, IPayloadContext context) {
