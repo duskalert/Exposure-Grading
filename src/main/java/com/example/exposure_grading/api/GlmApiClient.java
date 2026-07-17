@@ -65,10 +65,16 @@ public class GlmApiClient {
             }
 
             JsonObject json = JsonParser.parseString(respBody).getAsJsonObject();
-            String text = json.getAsJsonArray("choices")
+            var contentEl = json.getAsJsonArray("choices")
                     .get(0).getAsJsonObject()
                     .getAsJsonObject("message")
-                    .get("content").getAsString();
+                    .get("content");
+            String text;
+            if (contentEl.isJsonObject()) {
+                text = contentEl.getAsJsonObject().toString();
+            } else {
+                text = contentEl.getAsString();
+            }
 
             return new PhotoRateResult(true, text, parseRating(text));
         } catch (Exception e) {
